@@ -28,7 +28,6 @@ public class ConsumerBeanProxyFactory implements InstantiationAwareBeanPostProce
         if (bean instanceof QyRpcProperties) {
             properties = (QyRpcProperties) bean;
         }
-        logger.info("{}", beanName);
         Class<?> aClass = bean.getClass();
         Field[] fields = aClass.getDeclaredFields();
         for (Field field : fields) {
