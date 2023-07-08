@@ -25,9 +25,6 @@ public class ConsumerBeanProxyFactory implements InstantiationAwareBeanPostProce
         if ("qyrpcConsumerHolderCache".equals(beanName)) {
             holderCache = (HolderCache) bean;
         }
-        if (bean instanceof QyRpcProperties) {
-            properties = (QyRpcProperties) bean;
-        }
         Class<?> aClass = bean.getClass();
         Field[] fields = aClass.getDeclaredFields();
         for (Field field : fields) {
@@ -40,10 +37,7 @@ public class ConsumerBeanProxyFactory implements InstantiationAwareBeanPostProce
                     field.setAccessible(true);
                 }
                 fieldHolder.proxyClass = field.getType();
-                String value = annotation.value();
-                if (StringUtil.isEmpty(value))
-                    value = properties.getMain();
-                fieldHolder.name = value;
+                fieldHolder.name = annotation.value();
                 BEAN_QUEUE.add(fieldHolder);
             }
         }
@@ -53,7 +47,10 @@ public class ConsumerBeanProxyFactory implements InstantiationAwareBeanPostProce
                 fieldHolder = BEAN_QUEUE.poll();
                 if (fieldHolder != null) {
                     try {
-                        Object proxy = holderCache.getProxy(fieldHolder.name, fieldHolder.proxyClass);
+                        String name = fieldHolder.name;
+                        if (StringUtil.isEmpty(name))
+                            name = properties.getMain();
+                        Object proxy = holderCache.getProxy(name, fieldHolder.proxyClass);
                         fieldHolder.field.set(fieldHolder.bean, proxy);
                     } catch (Exception e) {
                         logger.error("自动注入异常 {}", fieldHolder, e);

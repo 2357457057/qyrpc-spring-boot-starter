@@ -31,6 +31,8 @@ public class QyRpcAutoConfiguration implements InitializingBean {
     public static final Logger logger = LoggerFactory.getLogger(QyRpcAutoConfiguration.class);
     @Resource
     private QyRpcProperties properties;
+    @Resource
+    ApplicationContext ctx;
 
     @Bean
     @ConditionalOnMissingBean
@@ -90,18 +92,18 @@ public class QyRpcAutoConfiguration implements InitializingBean {
                             String host;
                             int port;
                             if (!url.startsWith("qyrpc://")) {
-                                throw new IllegalArgumentException("配置文件中存在错误的url:{}，请检查 正确url: e.g. qyrpc://host:port", url);
+                                throw new IllegalArgumentException("[{}]配置文件中存在错误的url:{}，请检查 正确url: e.g. qyrpc://host:port", serverName, url);
                             }
                             url = url.replaceFirst("qyrpc://", "").trim();
                             String[] split = url.split(":");
                             if (split.length != 2) {
-                                throw new IllegalArgumentException("配置文件中存在错误的url:{}，请检查 正确url: e.g. qyrpc://host:port", url);
+                                throw new IllegalArgumentException("[{}]配置文件中存在错误的url:{}，请检查 正确url: e.g. qyrpc://host:port", serverName, url);
                             }
                             try {
                                 host = split[0].trim();
                                 port = Integer.parseInt(split[1].trim());
                             } catch (Exception e) {
-                                throw new IllegalArgumentException("配置文件中存在错误的url:{}，请检查 正确url: e.g. qyrpc://host:port", url);
+                                throw new IllegalArgumentException("[{}]配置文件中存在错误的url:{}，请检查 正确url: e.g. qyrpc://host:port", serverName, url);
                             }
                             ConnectionConfig.Builder builder = new ConnectionConfig.Builder();
                             builder.name(serverName)
@@ -114,7 +116,7 @@ public class QyRpcAutoConfiguration implements InitializingBean {
                                     .port(port);
                             Consumer consumer = Consumer.create(builder.build(), holderCache);
                             if (consumerConfig.id.length() != Dict.CLIENT_ID_LENGTH) {
-                                logger.warn("未配置客户端ID或配值的id不等于32位，将采用32位长的无符号UUID");
+                                logger.warn("[{}]未配置客户端ID或配值的id不等于32位，将采用32位长的无符号UUID {}", serverName, uuid);
                                 continue;
                             }
                             consumer.setId(uuid);
@@ -133,5 +135,7 @@ public class QyRpcAutoConfiguration implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
+        ConsumerBeanProxyFactory bean = ctx.getBean(ConsumerBeanProxyFactory.class);
+        bean.properties = properties;
     }
 }
