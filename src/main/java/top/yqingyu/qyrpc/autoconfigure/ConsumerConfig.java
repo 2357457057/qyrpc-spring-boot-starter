@@ -1,7 +1,7 @@
 package top.yqingyu.qyrpc.autoconfigure;
 
 public class ConsumerConfig {
-    //32位的标识ID
+    //
     String id = "";
     String threadName = "handle";
     String[] url = {"qyrpc://127.0.0.1:4729"};
@@ -11,6 +11,9 @@ public class ConsumerConfig {
     int bodyLengthMax = 1400;
     int radix = 32;
 
+    /**
+     * 32位长的标识ID
+     */
     public String getId() {
         return id;
     }
@@ -18,7 +21,9 @@ public class ConsumerConfig {
     public void setId(String id) {
         this.id = id;
     }
-
+    /**
+     * producer地址，同类地址的
+     */
     public void setUrl(String[] url) {
         this.url = url;
     }

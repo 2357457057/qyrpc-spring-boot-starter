@@ -6,7 +6,7 @@
     <parent>
         <groupId>top.yqingyu</groupId>
         <artifactId>yqingyu-parent</artifactId>
-        <version>1.9.4</version>
+        <version>1.9.5</version>
     </parent>
 
     <properties>
@@ -18,7 +18,8 @@
     <artifactId>qyrpc-spring-boot-starter</artifactId>
     <version>${parent.version}</version>
     <description>Qy's Rpc framework -- springboot starter</description>
-    <url>https://gitee.com/vqingyu/qy-rpc</url>
+    <url>https://gitee.com/vqingyu/qyrpc-spring-boot-starter</url>
+
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -39,7 +40,7 @@
         </developer>
     </developers>
     <scm>
-        <connection>https://gitee.com/vqingyu/qy-rpc.git</connection>
+        <connection>https://gitee.com/vqingyu/qyrpc-spring-boot-starter.git</connection>
         <developerConnection>scm:git:ssh://git@gitee.com:vqingyu/qyrpc-spring-boot-starter.git</developerConnection>
         <url>https://gitee.com/vqingyu/qyrpc-spring-boot-starter.git</url>
     </scm>
