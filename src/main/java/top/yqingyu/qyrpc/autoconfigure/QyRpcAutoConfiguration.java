@@ -84,12 +84,13 @@ public class QyRpcAutoConfiguration implements InitializingBean {
         return new MethodExecuteInterceptor() {
         };
     }
+
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnBean(MethodExecuteInterceptor.class)
     @ConditionalOnProperty(prefix = Constants.prefix, name = Constants.mode)
     public ConsumerHolderContext qyrpcConsumerHolderContext() throws Exception {
-        ConsumerHolderContext holderCache = new ConsumerHolderContext();
+        ConsumerHolderContext holderCache = new ConsumerHolderContext(ctx.getBean(MethodExecuteInterceptor.class));
         try {
             String uuid = UUIDUtil.randomUUID().toString2();
             switch (properties.getMode()) {
