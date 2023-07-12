@@ -16,7 +16,7 @@ import top.yqingyu.common.utils.UUIDUtil;
 import top.yqingyu.qymsg.Dict;
 import top.yqingyu.qymsg.netty.ConnectionConfig;
 import top.yqingyu.rpc.consumer.Consumer;
-import top.yqingyu.rpc.consumer.HolderCache;
+import top.yqingyu.rpc.consumer.ConsumerHolderContext;
 import top.yqingyu.rpc.producer.Producer;
 import top.yqingyu.rpc.producer.ServerExceptionHandler;
 
@@ -77,8 +77,8 @@ public class QyRpcAutoConfiguration implements InitializingBean {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = Constants.prefix, name = Constants.mode)
-    public HolderCache qyrpcConsumerHolderCache() throws Exception {
-        HolderCache holderCache = new HolderCache();
+    public ConsumerHolderContext qyrpcConsumerHolderContext() throws Exception {
+        ConsumerHolderContext holderCache = new ConsumerHolderContext();
         try {
             String uuid = UUIDUtil.randomUUID().toString2();
             switch (properties.getMode()) {

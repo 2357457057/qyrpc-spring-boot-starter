@@ -7,7 +7,7 @@ import org.springframework.beans.factory.config.InstantiationAwareBeanPostProces
 import top.yqingyu.common.exception.QyRuntimeException;
 import top.yqingyu.common.utils.StringUtil;
 import top.yqingyu.rpc.annontation.QyRpcConsumer;
-import top.yqingyu.rpc.consumer.HolderCache;
+import top.yqingyu.rpc.consumer.ConsumerHolderContext;
 
 
 import java.lang.reflect.Field;
@@ -17,13 +17,13 @@ import java.util.LinkedList;
 public class ConsumerBeanProxyFactory implements InstantiationAwareBeanPostProcessor {
     public static final Logger logger = LoggerFactory.getLogger(ConsumerBeanProxyFactory.class);
     private final LinkedList<FieldHolder> BEAN_QUEUE = new LinkedList<>();
-    HolderCache holderCache;
+    ConsumerHolderContext holderCache;
     QyRpcProperties properties;
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        if ("qyrpcConsumerHolderCache".equals(beanName)) {
-            holderCache = (HolderCache) bean;
+        if ("qyrpcConsumerHolderContext".equals(beanName)) {
+            holderCache = (ConsumerHolderContext) bean;
         }
         Class<?> aClass = bean.getClass();
         Field[] fields = aClass.getDeclaredFields();
