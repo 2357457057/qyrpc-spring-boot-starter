@@ -7,6 +7,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWarDeployment;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,7 @@ import top.yqingyu.qymsg.Dict;
 import top.yqingyu.qymsg.netty.ConnectionConfig;
 import top.yqingyu.rpc.consumer.Consumer;
 import top.yqingyu.rpc.consumer.ConsumerHolderContext;
+import top.yqingyu.rpc.consumer.MethodExecuteInterceptor;
 import top.yqingyu.rpc.producer.Producer;
 import top.yqingyu.rpc.producer.ServerExceptionHandler;
 
@@ -75,7 +77,16 @@ public class QyRpcAutoConfiguration implements InitializingBean {
     }
 
     @Bean
+    @ConditionalOnBean(Producer.class)
     @ConditionalOnMissingBean
+    public MethodExecuteInterceptor qyrpcMethodExecuteInterceptor() {
+        logger.info("qyrpc consumer use inner MethodExecuteInterceptor");
+        return new MethodExecuteInterceptor() {
+        };
+    }
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnBean(MethodExecuteInterceptor.class)
     @ConditionalOnProperty(prefix = Constants.prefix, name = Constants.mode)
     public ConsumerHolderContext qyrpcConsumerHolderContext() throws Exception {
         ConsumerHolderContext holderCache = new ConsumerHolderContext();
