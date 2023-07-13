@@ -38,7 +38,6 @@ public class ProducerBeanRegister implements InstantiationAwareBeanPostProcessor
         if (annotation != null) {
             BEAN_QUEUE.add(bean);
         }
-        logger.info("{} {} {} {}", beanName, bean.getClass(), Arrays.toString(bean.getClass().getInterfaces()), bean);
         if (mybatisMapperFactoryBeanClass != null && Constants.MapperFactoryBean.equals(bean.getClass().getName())) {
             try {
                 //代理工厂创建的Mybatis的代理类
