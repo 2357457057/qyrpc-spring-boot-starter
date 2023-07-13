@@ -10,6 +10,7 @@ import top.yqingyu.rpc.annontation.QyRpcProducer;
 import top.yqingyu.rpc.producer.Producer;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.LinkedList;
 
 public class ProducerBeanRegister implements InstantiationAwareBeanPostProcessor {
@@ -21,6 +22,10 @@ public class ProducerBeanRegister implements InstantiationAwareBeanPostProcessor
 
     public ProducerBeanRegister(ApplicationContext ctx) {
         this.ctx = ctx;
+        try {
+            mybatisMapperFactoryBeanClass = Class.forName(Constants.MapperFactoryBean);
+        } catch (Throwable ignore) {
+        }
     }
 
     @Override
@@ -33,6 +38,7 @@ public class ProducerBeanRegister implements InstantiationAwareBeanPostProcessor
         if (annotation != null) {
             BEAN_QUEUE.add(bean);
         }
+        logger.info("{} {} {} {}", beanName, bean.getClass(), Arrays.toString(bean.getClass().getInterfaces()), bean);
         if (mybatisMapperFactoryBeanClass != null && Constants.MapperFactoryBean.equals(bean.getClass().getName())) {
             try {
                 //代理工厂创建的Mybatis的代理类
