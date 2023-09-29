@@ -150,7 +150,7 @@ public class QyRpcAutoConfiguration implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        ConsumerBeanProxyFactory bean = ctx.getBean(ConsumerBeanProxyFactory.class);
-        bean.properties = properties;
+//        ConsumerBeanProxyFactory bean = ctx.getBean(ConsumerBeanProxyFactory.class);
+//        bean.properties = properties;
     }
 }
