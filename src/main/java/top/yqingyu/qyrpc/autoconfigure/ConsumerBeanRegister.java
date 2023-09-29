@@ -3,10 +3,8 @@ package top.yqingyu.qyrpc.autoconfigure;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.context.ResourceLoaderAware;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.context.*;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
@@ -53,11 +51,20 @@ public class ConsumerBeanRegister implements ImportBeanDefinitionRegistrar, Envi
     }
 
     public void registerBeanDefinitions(AnnotationAttributes mapperScanAttrs, BeanDefinitionRegistry registry, String name) {
+        putMe();
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(ConsumerBeanConfigure.class);
         builder.addPropertyValue("scanPackage", mapperScanAttrs.get("path"));
         builder.addPropertyValue("consumerName", mapperScanAttrs.get("name"));
         builder.addPropertyValue("consumerHolderContext", consumerHolderContext);
         registry.registerBeanDefinition(name, builder.getBeanDefinition());
+    }
+
+    void putMe() {
+        if (!context.containsBean("ConsumerBeanRegister")) {
+            ConfigurableApplicationContext configurableApplicationContext = (ConfigurableApplicationContext) context;
+            DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) configurableApplicationContext.getBeanFactory();
+            beanFactory.registerSingleton("ConsumerBeanRegister", this);
+        }
     }
 
     static class RepeatingRegistrar extends ConsumerBeanRegister {
