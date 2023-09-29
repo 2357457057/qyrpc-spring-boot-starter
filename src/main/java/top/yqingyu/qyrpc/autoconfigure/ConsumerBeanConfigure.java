@@ -70,6 +70,14 @@ public class ConsumerBeanConfigure implements BeanDefinitionRegistryPostProcesso
         this.mapperFactoryBeanClass = mapperFactoryBeanClass;
     }
 
+    public ConsumerHolderContext getConsumerHolderContext() {
+        return consumerHolderContext;
+    }
+
+    public void setConsumerHolderContext(ConsumerHolderContext consumerHolderContext) {
+        this.consumerHolderContext = consumerHolderContext;
+    }
+
     public ApplicationContext getApplicationContext() {
         return applicationContext;
     }
