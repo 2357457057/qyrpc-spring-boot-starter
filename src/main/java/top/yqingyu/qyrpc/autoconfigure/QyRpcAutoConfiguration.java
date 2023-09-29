@@ -7,7 +7,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWarDeployment;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -22,11 +21,12 @@ import top.yqingyu.rpc.consumer.MethodExecuteInterceptor;
 import top.yqingyu.rpc.producer.Producer;
 import top.yqingyu.rpc.producer.ServerExceptionHandler;
 
-
 import java.util.Map;
 import java.util.Set;
 
-@Import({ConsumerBeanProxyFactory.class, ProducerBeanRegister.class})
+@Import({
+//        ConsumerBeanProxyFactory.class, 废弃。 不再使用QyRpcConsumer注入，使用
+        ProducerBeanRegister.class})
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(QyRpcProperties.class)
 public class QyRpcAutoConfiguration implements InitializingBean {
@@ -90,7 +90,10 @@ public class QyRpcAutoConfiguration implements InitializingBean {
     @ConditionalOnBean(MethodExecuteInterceptor.class)
     @ConditionalOnProperty(prefix = Constants.prefix, name = Constants.mode)
     public ConsumerHolderContext qyrpcConsumerHolderContext() throws Exception {
-        ConsumerHolderContext holderCache = new ConsumerHolderContext(ctx.getBean(MethodExecuteInterceptor.class));
+        MethodExecuteInterceptor proxyMethodInterceptor = ctx.getBean(MethodExecuteInterceptor.class);
+        ConsumerBeanRegister factoryBean = ctx.getBean(ConsumerBeanRegister.class);
+        ConsumerHolderContext context = factoryBean.consumerHolderContext;
+        context.setMethodExecuteInterceptor(proxyMethodInterceptor);
         try {
             String uuid = UUIDUtil.randomUUID().toString2();
             switch (properties.getMode()) {
@@ -126,7 +129,7 @@ public class QyRpcAutoConfiguration implements InitializingBean {
                                     .clearTime(consumerConfig.clearTime)
                                     .host(host)
                                     .port(port);
-                            Consumer consumer = Consumer.create(builder.build(), holderCache);
+                            Consumer consumer = Consumer.create(builder.build(), context);
                             if (consumerConfig.id.length() != Dict.CLIENT_ID_LENGTH) {
                                 logger.warn("[{}]未配置客户端ID或配值的id不等于32位，将采用32位长的无符号UUID {}", serverName, uuid);
                                 continue;
@@ -138,9 +141,9 @@ public class QyRpcAutoConfiguration implements InitializingBean {
                     logger.info("Initialized all qyrpc Consumer");
                 }
             }
-            return holderCache;
+            return context;
         } catch (Throwable t) {
-            holderCache.shutdown();
+            context.shutdown();
             throw t;
         }
     }

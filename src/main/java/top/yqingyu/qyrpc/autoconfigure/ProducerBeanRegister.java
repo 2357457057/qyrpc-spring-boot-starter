@@ -24,8 +24,7 @@ public class ProducerBeanRegister implements InstantiationAwareBeanPostProcessor
         this.ctx = ctx;
         try {
             mybatisMapperFactoryBeanClass = Class.forName(Constants.MapperFactoryBean);
-        } catch (Throwable ignore) {
-        }
+        } catch (Throwable ignore) {}
     }
 
     @Override
@@ -38,7 +37,7 @@ public class ProducerBeanRegister implements InstantiationAwareBeanPostProcessor
         if (annotation != null) {
             BEAN_QUEUE.add(bean);
         }
-        if (mybatisMapperFactoryBeanClass != null && Constants.MapperFactoryBean.equals(bean.getClass().getName())) {
+        if (annotation != null && mybatisMapperFactoryBeanClass != null && Constants.MapperFactoryBean.equals(bean.getClass().getName())) {
             try {
                 //代理工厂创建的Mybatis的代理类
                 Method getObject = bean.getClass().getMethod(Constants.MapperFactoryBeanInvokeMethod);
