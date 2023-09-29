@@ -26,6 +26,7 @@ public class ConsumerBeanRegister implements ImportBeanDefinitionRegistrar, Envi
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
+        putMe();
     }
 
     @Override
@@ -51,7 +52,6 @@ public class ConsumerBeanRegister implements ImportBeanDefinitionRegistrar, Envi
     }
 
     public void registerBeanDefinitions(AnnotationAttributes mapperScanAttrs, BeanDefinitionRegistry registry, String name) {
-        putMe();
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(ConsumerBeanConfigure.class);
         builder.addPropertyValue("scanPackage", mapperScanAttrs.get("path"));
         builder.addPropertyValue("consumerName", mapperScanAttrs.get("name"));
