@@ -90,15 +90,16 @@ public class QyRpcAutoConfiguration implements InitializingBean {
     @ConditionalOnBean(MethodExecuteInterceptor.class)
     @ConditionalOnProperty(prefix = Constants.prefix, name = Constants.mode)
     public ConsumerHolderContext qyrpcConsumerHolderContext() throws Exception {
-        MethodExecuteInterceptor proxyMethodInterceptor = ctx.getBean(MethodExecuteInterceptor.class);
-        ConsumerBeanRegister factoryBean = ctx.getBean(ConsumerBeanRegister.class);
-        ConsumerHolderContext context = factoryBean.consumerHolderContext;
-        context.setMethodExecuteInterceptor(proxyMethodInterceptor);
+        ConsumerHolderContext context = new ConsumerHolderContext();
         try {
             String uuid = UUIDUtil.randomUUID().toString2();
             switch (properties.getMode()) {
                 case CONSUMER, BOTH -> {
                     logger.info("Initialize autoConfigure qyrpc Consumer");
+                    MethodExecuteInterceptor proxyMethodInterceptor = ctx.getBean(MethodExecuteInterceptor.class);
+                    ConsumerBeanConfigure factoryBean = ctx.getBean(ConsumerBeanConfigure.class);
+                    context = factoryBean.consumerHolderContext;
+                    context.setMethodExecuteInterceptor(proxyMethodInterceptor);
                     Map<String, ConsumerConfig> consumerConfigMap = properties.getConsumer();
                     Set<String> consumerConfigKey = consumerConfigMap.keySet();
                     for (String serverName : consumerConfigKey) {

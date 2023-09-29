@@ -37,7 +37,7 @@ public class ConsumerBeanConfigure implements BeanDefinitionRegistryPostProcesso
     private String scanPackage;
     private String consumerName;
     private String beanName;
-    private ConsumerHolderContext consumerHolderContext;
+    ConsumerHolderContext consumerHolderContext;
 
     private Class<?> mapperFactoryBeanClass = ConsumerProxyBeanFactory.class;
     private ApplicationContext applicationContext;
