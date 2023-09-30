@@ -5,12 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.ResourceLoader;
 import top.yqingyu.rpc.annontation.QyRpcProducer;
 import top.yqingyu.rpc.producer.Producer;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.LinkedList;
 
 public class ProducerBeanRegister implements InstantiationAwareBeanPostProcessor {
@@ -24,7 +22,8 @@ public class ProducerBeanRegister implements InstantiationAwareBeanPostProcessor
         this.ctx = ctx;
         try {
             mybatisMapperFactoryBeanClass = Class.forName(Constants.MapperFactoryBean);
-        } catch (Throwable ignore) {}
+        } catch (Throwable ignore) {
+        }
     }
 
     @Override
@@ -37,15 +36,7 @@ public class ProducerBeanRegister implements InstantiationAwareBeanPostProcessor
         if (annotation != null) {
             BEAN_QUEUE.add(bean);
         }
-        if (annotation != null && mybatisMapperFactoryBeanClass != null && Constants.MapperFactoryBean.equals(bean.getClass().getName())) {
-            try {
-                //代理工厂创建的Mybatis的代理类
-                Method getObject = bean.getClass().getMethod(Constants.MapperFactoryBeanInvokeMethod);
-                Object invoke = getObject.invoke(bean);
-                BEAN_QUEUE.add(invoke);
-            } catch (Exception ignore) {
-            }
-        }
+        forMyBatis(bean);
         if (qyrpcProducer != null) {
             Object poll;
             do {
@@ -60,5 +51,21 @@ public class ProducerBeanRegister implements InstantiationAwareBeanPostProcessor
             } while (poll != null);
         }
         return bean;
+    }
+
+    void forMyBatis(Object bean) {
+        if (mybatisMapperFactoryBeanClass != null && Constants.MapperFactoryBean.equals(bean.getClass().getName())) {
+            try {
+                Method method = bean.getClass().getMethod(Constants.MapperFactoryBeanGetObjectType);
+                Class<?> type = (Class<?>) method.invoke(bean);
+                if (type.getAnnotation(QyRpcProducer.class) != null) {
+                    //代理工厂创建的Mybatis的代理类
+                    Method getObject = bean.getClass().getMethod(Constants.MapperFactoryBeanInvokeMethod);
+                    Object invoke = getObject.invoke(bean);
+                    BEAN_QUEUE.add(invoke);
+                }
+            } catch (Exception ignore) {
+            }
+        }
     }
 }

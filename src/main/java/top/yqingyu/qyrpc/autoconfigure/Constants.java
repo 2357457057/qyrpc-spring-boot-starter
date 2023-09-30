@@ -5,4 +5,5 @@ public interface Constants {
     String mode = "mode";
     String MapperFactoryBean = "org.mybatis.spring.mapper.MapperFactoryBean";
     String MapperFactoryBeanInvokeMethod = "getObject";
+    String MapperFactoryBeanGetObjectType = "getObjectType";
 }
