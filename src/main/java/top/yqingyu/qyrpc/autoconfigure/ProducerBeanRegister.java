@@ -15,7 +15,7 @@ import java.util.LinkedList;
 public class ProducerBeanRegister implements InstantiationAwareBeanPostProcessor {
     public static final Logger logger = LoggerFactory.getLogger(ProducerBeanRegister.class);
     private Producer qyrpcProducer;
-    final LinkedList<Object> BEAN_QUEUE = new LinkedList<>();
+    final LinkedList<RegBean> BEAN_QUEUE = new LinkedList<>();
     ApplicationContext ctx;
 
 
@@ -31,16 +31,17 @@ public class ProducerBeanRegister implements InstantiationAwareBeanPostProcessor
         Class<?> aClass = bean.getClass();
         QyRpcProducer annotation = aClass.getAnnotation(QyRpcProducer.class);
         if (annotation != null) {
-            BEAN_QUEUE.add(bean);
+            BEAN_QUEUE.add(new RegBean(bean, beanName));
         }
         forFactoryBean(bean, beanName);
         if (qyrpcProducer != null) {
-            Object poll;
+            RegBean poll;
             do {
                 poll = BEAN_QUEUE.poll();
                 if (poll != null) {
                     try {
-                        qyrpcProducer.register(poll);
+                        qyrpcProducer.register(poll.bean);
+                        logger.debug("reg bean {} to qyrpc, class: {}", poll.beanName, poll.bean.getClass().getName());
                     } catch (ClassNotFoundException e) {
                         logger.error("qyrpc Producer 对象 {} 注册失败 请检查", poll, e);
                     }
@@ -55,15 +56,24 @@ public class ProducerBeanRegister implements InstantiationAwareBeanPostProcessor
             try {
                 Method method = bean.getClass().getMethod(Constants.FactoryBeanMethod_getObjectType);
                 Class<?> type = (Class<?>) method.invoke(bean);
-                logger.warn("{} -- {} -- {}", bean.getClass(), beanName, type);
                 if (type.getAnnotation(QyRpcProducer.class) != null) {
                     //代理工厂创建的Mybatis的代理类
                     Method getObject = bean.getClass().getMethod(Constants.FactoryBeanMethod_getObject);
                     Object invoke = getObject.invoke(bean);
-                    BEAN_QUEUE.add(invoke);
+                    BEAN_QUEUE.add(new RegBean(invoke, beanName));
                 }
             } catch (Exception ignore) {
             }
+        }
+    }
+
+    static class RegBean {
+        Object bean;
+        String beanName;
+
+        public RegBean(Object bean, String beanName) {
+            this.bean = bean;
+            this.beanName = beanName;
         }
     }
 }

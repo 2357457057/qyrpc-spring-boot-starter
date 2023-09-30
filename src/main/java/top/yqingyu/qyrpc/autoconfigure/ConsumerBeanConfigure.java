@@ -133,7 +133,7 @@ public class ConsumerBeanConfigure implements BeanDefinitionRegistryPostProcesso
             Set<BeanDefinitionHolder> beanDefinitions = super.doScan(basePackages);
 
             if (beanDefinitions.isEmpty()) {
-                logger.warn("No QyRpcConsumer was found in '" + Arrays.toString(basePackages) + "' package. Please check your configuration.");
+                logger.warn("No QyRpcConsumer Bean was found in '{}' package. Please check your configuration.",Arrays.toString(basePackages));
             } else {
                 processBeanDefinitions(beanDefinitions);
             }
