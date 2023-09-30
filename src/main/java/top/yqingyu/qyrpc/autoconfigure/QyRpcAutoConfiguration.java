@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Import({
-//        ConsumerBeanProxyFactory.class, 废弃。 不再使用QyRpcConsumer注入，使用
+//        ConsumerBeanProxyFactory.class, 废弃。 不再使用QyRpcConsumer注入，使用 Spring auto
         ProducerBeanRegister.class})
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(QyRpcProperties.class)
@@ -77,7 +77,7 @@ public class QyRpcAutoConfiguration implements InitializingBean {
     }
 
     @Bean
-    @ConditionalOnBean(Producer.class)
+    @ConditionalOnBean({ConsumerBeanConfigure.class})
     @ConditionalOnMissingBean
     public MethodExecuteInterceptor qyrpcMethodExecuteInterceptor() {
         logger.info("qyrpc consumer use inner MethodExecuteInterceptor");
@@ -87,7 +87,7 @@ public class QyRpcAutoConfiguration implements InitializingBean {
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnBean(MethodExecuteInterceptor.class)
+    @ConditionalOnBean({MethodExecuteInterceptor.class})
     @ConditionalOnProperty(prefix = Constants.prefix, name = Constants.mode)
     public ConsumerHolderContext qyrpcConsumerHolderContext() throws Exception {
         ConsumerHolderContext context = new ConsumerHolderContext();
