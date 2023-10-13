@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConsumerBeanRegister implements ImportBeanDefinitionRegistrar, EnvironmentAware, ResourceLoaderAware, ApplicationContextAware {
 
-    public final ConsumerHolderContext consumerHolderContext = new ConsumerHolderContext();
     ApplicationContext context;
     ResourceLoader resourceLoader;
     Environment environment;
@@ -26,7 +25,6 @@ public class ConsumerBeanRegister implements ImportBeanDefinitionRegistrar, Envi
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
-        putMe();
     }
 
     @Override
@@ -55,17 +53,9 @@ public class ConsumerBeanRegister implements ImportBeanDefinitionRegistrar, Envi
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(ConsumerBeanConfigure.class);
         builder.addPropertyValue("scanPackage", mapperScanAttrs.get("path"));
         builder.addPropertyValue("consumerName", mapperScanAttrs.get("name"));
-        builder.addPropertyValue("consumerHolderContext", consumerHolderContext);
         registry.registerBeanDefinition(name, builder.getBeanDefinition());
     }
 
-    void putMe() {
-        if (!context.containsBean("ConsumerBeanRegister")) {
-            ConfigurableApplicationContext configurableApplicationContext = (ConfigurableApplicationContext) context;
-            DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) configurableApplicationContext.getBeanFactory();
-            beanFactory.registerSingleton("ConsumerBeanRegister", this);
-        }
-    }
 
     static class RepeatingRegistrar extends ConsumerBeanRegister {
         /**

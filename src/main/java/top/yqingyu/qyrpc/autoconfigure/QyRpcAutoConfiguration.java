@@ -97,8 +97,6 @@ public class QyRpcAutoConfiguration implements InitializingBean {
                 case CONSUMER, BOTH -> {
                     logger.info("Initialize autoConfigure qyrpc Consumer");
                     MethodExecuteInterceptor proxyMethodInterceptor = ctx.getBean(MethodExecuteInterceptor.class);
-                    ConsumerBeanConfigure factoryBean = ctx.getBean(ConsumerBeanConfigure.class);
-                    context = factoryBean.consumerHolderContext;
                     context.setMethodExecuteInterceptor(proxyMethodInterceptor);
                     Map<String, ConsumerConfig> consumerConfigMap = properties.getConsumer();
                     Set<String> consumerConfigKey = consumerConfigMap.keySet();

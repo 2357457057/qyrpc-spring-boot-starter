@@ -1,13 +1,15 @@
 package top.yqingyu.qyrpc.autoconfigure;
 
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.context.ApplicationContext;
 import top.yqingyu.rpc.consumer.ConsumerHolderContext;
 
 
 public class ConsumerProxyBeanFactory<T> implements FactoryBean<T> {
 
     Class<T> consumerType;
-    ConsumerHolderContext consumerHolderContext;
+    private ApplicationContext applicationContext;
+    private volatile ConsumerHolderContext consumerHolderContext = null;
     String name;
 
     public ConsumerProxyBeanFactory(Class<T> consumerType) {
@@ -24,6 +26,9 @@ public class ConsumerProxyBeanFactory<T> implements FactoryBean<T> {
 
     @Override
     public T getObject() throws Exception {
+        if (consumerHolderContext == null) {
+            consumerHolderContext = applicationContext.getBean(ConsumerHolderContext.class);
+        }
         return consumerHolderContext.getProxy(name, consumerType);
     }
 
@@ -40,11 +45,11 @@ public class ConsumerProxyBeanFactory<T> implements FactoryBean<T> {
         this.consumerType = consumerType;
     }
 
-    public ConsumerHolderContext getConsumerHolderContext() {
-        return consumerHolderContext;
+    public ApplicationContext getApplicationContext() {
+        return applicationContext;
     }
 
-    public void setConsumerHolderContext(ConsumerHolderContext consumerHolderContext) {
-        this.consumerHolderContext = consumerHolderContext;
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 }

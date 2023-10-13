@@ -16,14 +16,11 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProce
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.AssignableTypeFilter;
-import org.springframework.util.StringUtils;
 import top.yqingyu.common.utils.ClazzUtil;
-import top.yqingyu.rpc.consumer.ConsumerHolderContext;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -34,19 +31,17 @@ import static org.springframework.util.Assert.notNull;
 
 public class ConsumerBeanConfigure implements BeanDefinitionRegistryPostProcessor, InitializingBean, ApplicationContextAware, BeanNameAware {
 
-    private String scanPackage;
+    private String[] scanPackage;
     private String consumerName;
     private String beanName;
-    ConsumerHolderContext consumerHolderContext;
-
     private Class<?> mapperFactoryBeanClass = ConsumerProxyBeanFactory.class;
     private ApplicationContext applicationContext;
 
-    public String getScanPackage() {
+    public String[] getScanPackage() {
         return scanPackage;
     }
 
-    public void setScanPackage(String scanPackage) {
+    public void setScanPackage(String[] scanPackage) {
         this.scanPackage = scanPackage;
     }
 
@@ -68,14 +63,6 @@ public class ConsumerBeanConfigure implements BeanDefinitionRegistryPostProcesso
 
     public void setMapperFactoryBeanClass(Class<?> mapperFactoryBeanClass) {
         this.mapperFactoryBeanClass = mapperFactoryBeanClass;
-    }
-
-    public ConsumerHolderContext getConsumerHolderContext() {
-        return consumerHolderContext;
-    }
-
-    public void setConsumerHolderContext(ConsumerHolderContext consumerHolderContext) {
-        this.consumerHolderContext = consumerHolderContext;
     }
 
     public ApplicationContext getApplicationContext() {
@@ -106,9 +93,9 @@ public class ConsumerBeanConfigure implements BeanDefinitionRegistryPostProcesso
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
         ConsumerScanner scanner = new ConsumerScanner(registry);
         scanner.setConsumerName(consumerName);
-        scanner.setConsumerHolderContext(consumerHolderContext);
         scanner.registerFilters();
-        scanner.scan(StringUtils.tokenizeToStringArray(this.scanPackage, ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS));
+        scanner.setApplicationContext(applicationContext);
+        scanner.scan(this.scanPackage);
     }
 
     private Environment getEnvironment() {
@@ -120,8 +107,8 @@ public class ConsumerBeanConfigure implements BeanDefinitionRegistryPostProcesso
         private static final Logger logger = LoggerFactory.getLogger(ConsumerScanner.class);
         BeanDefinitionRegistry registry;
         String consumerName;
-        ConsumerHolderContext consumerHolderContext;
         private final Class<?> mapperFactoryBeanClass = ConsumerProxyBeanFactory.class;
+        private ApplicationContext applicationContext;
 
         public ConsumerScanner(BeanDefinitionRegistry registry) {
             super(registry);
@@ -133,7 +120,7 @@ public class ConsumerBeanConfigure implements BeanDefinitionRegistryPostProcesso
             Set<BeanDefinitionHolder> beanDefinitions = super.doScan(basePackages);
 
             if (beanDefinitions.isEmpty()) {
-                logger.warn("No QyRpcConsumer Bean was found in '{}' package. Please check your configuration.",Arrays.toString(basePackages));
+                logger.warn("No QyRpcConsumer Bean was found in '{}' package. Please check your configuration.", Arrays.toString(basePackages));
             } else {
                 processBeanDefinitions(beanDefinitions);
             }
@@ -162,7 +149,7 @@ public class ConsumerBeanConfigure implements BeanDefinitionRegistryPostProcesso
                     definition.getPropertyValues().add("consumerType", Class.forName(beanClassName, true, ClazzUtil.getDefaultClassLoader()));
                 } catch (ClassNotFoundException ignore) {
                 }
-                definition.getPropertyValues().add("consumerHolderContext", consumerHolderContext);
+                definition.getPropertyValues().add("applicationContext", applicationContext);
                 definition.getPropertyValues().add("name", consumerName);
 
                 definition.setBeanClass(this.mapperFactoryBeanClass);
@@ -212,12 +199,12 @@ public class ConsumerBeanConfigure implements BeanDefinitionRegistryPostProcesso
             this.consumerName = consumerName;
         }
 
-        public ConsumerHolderContext getConsumerHolderContext() {
-            return consumerHolderContext;
+        public ApplicationContext getApplicationContext() {
+            return applicationContext;
         }
 
-        public void setConsumerHolderContext(ConsumerHolderContext consumerHolderContext) {
-            this.consumerHolderContext = consumerHolderContext;
+        public void setApplicationContext(ApplicationContext applicationContext) {
+            this.applicationContext = applicationContext;
         }
     }
 }
