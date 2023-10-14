@@ -50,6 +50,9 @@ public class QyRpcAutoConfiguration implements InitializingBean {
     @ConditionalOnProperty(prefix = Constants.prefix, name = Constants.mode)
     public Producer qyrpcProducer(ApplicationContext ctx) throws Exception {
         ProducerConfig config = properties.getProducer();
+        if (config == null) {
+            config = new ProducerConfig();
+        }
         Producer build = Producer.Builder.newBuilder()
                 .port(config.port)
                 .bodyLengthMax(config.bodyLengthMax)
