@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import top.yqingyu.common.utils.UUIDUtil;
 import top.yqingyu.qymsg.Dict;
-import top.yqingyu.qymsg.netty.ConnectionConfig;
+import top.yqingyu.qymsg.socket.ConnectionConfig;
 import top.yqingyu.rpc.consumer.Consumer;
 import top.yqingyu.rpc.consumer.ConsumerHolderContext;
 import top.yqingyu.rpc.consumer.MethodExecuteInterceptor;
