@@ -3,14 +3,14 @@ package top.yqingyu.qyrpc.autoconfigure;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+
 import org.springframework.context.*;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
-import top.yqingyu.rpc.consumer.ConsumerHolderContext;
+
 
 import java.util.concurrent.atomic.AtomicInteger;
 

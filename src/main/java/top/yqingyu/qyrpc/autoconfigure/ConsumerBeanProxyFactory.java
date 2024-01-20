@@ -16,7 +16,7 @@ import java.util.LinkedList;
 /**
  * 废弃。不再使用此类注入。
  */
-
+@Deprecated
 public class ConsumerBeanProxyFactory implements InstantiationAwareBeanPostProcessor {
     public static final Logger logger = LoggerFactory.getLogger(ConsumerBeanProxyFactory.class);
     private final LinkedList<FieldHolder> BEAN_QUEUE = new LinkedList<>();
