@@ -47,7 +47,7 @@ public class QyRpcAutoConfiguration implements InitializingBean {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnBean(ServerExceptionHandler.class)
-    @ConditionalOnProperty(prefix = Constants.producerPrefix)
+    @ConditionalOnProperty(name = Constants.producerPrefix)
     public Producer qyrpcProducer(ApplicationContext ctx) throws Exception {
         ProducerConfig config = properties.getProducer();
         if (config == null) {
@@ -91,7 +91,7 @@ public class QyRpcAutoConfiguration implements InitializingBean {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnBean({MethodExecuteInterceptor.class})
-    @ConditionalOnProperty(prefix = Constants.consumerPrefix)
+    @ConditionalOnProperty(name = Constants.consumerPrefix)
     public ConsumerHolderContext qyrpcConsumerHolderContext() throws Exception {
         ConsumerHolderContext context = new ConsumerHolderContext();
         try {
