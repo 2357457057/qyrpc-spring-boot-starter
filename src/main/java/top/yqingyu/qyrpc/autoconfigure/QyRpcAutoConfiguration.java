@@ -19,6 +19,7 @@ import top.yqingyu.rpc.consumer.Consumer;
 import top.yqingyu.rpc.consumer.ConsumerHolderContext;
 import top.yqingyu.rpc.consumer.MethodExecuteInterceptor;
 import top.yqingyu.rpc.producer.Producer;
+import top.yqingyu.rpc.producer.QyRpcInterceptorChain;
 import top.yqingyu.rpc.producer.ServerExceptionHandler;
 
 import java.util.Map;
@@ -46,9 +47,15 @@ public class QyRpcAutoConfiguration implements InitializingBean {
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnBean(ServerExceptionHandler.class)
+    public QyRpcInterceptorChain producerChain() {
+        return new QyRpcInterceptorChain();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnBean({ServerExceptionHandler.class, QyRpcInterceptorChain.class})
     @ConditionalOnProperty(prefix = Constants.prefix, name = "mode")
-    public Producer qyrpcProducer(ApplicationContext ctx) throws Exception {
+    public Producer qyrpcProducer(ServerExceptionHandler serverExceptionHandler,QyRpcInterceptorChain chain) throws Exception {
         ProducerConfig config = properties.getProducer();
         if (config == null) {
             config = new ProducerConfig();
@@ -58,7 +65,8 @@ public class QyRpcAutoConfiguration implements InitializingBean {
                 .bodyLengthMax(config.bodyLengthMax)
                 .radix(config.radix)
                 .threadName(config.threadName)
-                .exceptionHandler(ctx.getBean(ServerExceptionHandler.class))
+                .exceptionHandler(serverExceptionHandler)
+                .interceptorChain(chain)
                 .pool(config.pool)
                 .serverName(config.serverName)
                 .build();
