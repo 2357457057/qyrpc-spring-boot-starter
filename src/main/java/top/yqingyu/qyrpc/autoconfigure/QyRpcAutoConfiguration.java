@@ -137,6 +137,7 @@ public class QyRpcAutoConfiguration implements InitializingBean {
                                     .poolMin(consumerConfig.poolMin)
                                     .radix(consumerConfig.radix)
                                     .clearTime(consumerConfig.clearTime)
+                                    .bodyLengthMax(consumerConfig.bodyLengthMax)
                                     .host(host)
                                     .port(port);
                             Consumer consumer = Consumer.create(builder.build(), context);

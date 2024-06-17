@@ -5,11 +5,6 @@ public class ConsumerConfig {
     String id = "";
     String threadName = "handle";
     String[] url = {"qyrpc://127.0.0.1:4729"};
-    /**
-     * 要远程调用的方法路径，
-     * 假如你想使用自动注入的话。
-     */
-    String[] rpcScanPath;
     int poolMax = 2;
     int poolMin = 1;
     long clearTime = 1800000;
